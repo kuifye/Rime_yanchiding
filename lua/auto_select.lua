@@ -79,7 +79,6 @@ function last_code_is_commitkey(script_text)
 end
 
 local function auto_select(key, env)
-
   local engine = env.engine
   local context = engine.context
   local config = engine.schema.config
@@ -92,6 +91,20 @@ local function auto_select(key, env)
   local commit_key_semicolon_code = ';'
   local commit_key_apostrophe = 'apostrophe'
   local commit_key_flag = false
+  local alphabet = config:get_string('speller/alphabet')
+  local found_match_flag = false -- 假设尚未找到匹配
+
+  for i = 1, #alphabet do
+    if key:repr() == string.sub(alphabet, i, i) then
+      -- 如果key的repr()等于str中的某个字符，执行if块的内容
+      found_match_flag = true -- 标记为已找到匹配
+      break -- 找到匹配后跳出循环
+    end
+  end
+
+  if (not found_match_flag) then                --判断当前输入是否为空格或分号
+    return 2 -- kAccepted
+  end
 
   if (key:repr() == commit_key or key:repr() == commit_key_semicolon or key:repr() == commit_key_apostrophe) then                --判断当前输入是否为空格或分号
     commit_key_flag = true
@@ -131,44 +144,45 @@ local function auto_select(key, env)
     end
   end
 
-  if (auto_code ~= 0 and len >= auto_code ) then                                                        ------------------------------------n码上屏
+  if (auto_code ~= 0 and len >= auto_code and found_match_flag) then                                                        ------------------------------------n码上屏
     local script_text = context:get_script_text()    --获取带分词的编码
-    split_text = {}                                  --命名编码数组
-    split_text = split(script_text, " ")             --以空格分割编码，放入命名好的数组内
+    local script_text1 = {}
+    script_text1 = context:get_property("script_text1")
+    local script_text2 = {}   
+    script_text2 = context:get_property("script_text2")
+    local script_text3 = {}   
+    script_text3 = context:get_property("script_text3")
+    local script_text4 = {}   
+    script_text4 = context:get_property("script_text4")
+    context:set_property("script_text1", script_text)
+    context:set_property("script_text2", script_text1)
+    context:set_property("script_text3", script_text2)
+    context:set_property("script_text4", script_text3)
+    if (len >= 4) then
+      local split_text = {}
+      split_text = split(script_text, " ")
+      local split_text1 = {}
+      split_text1 = split(script_text1, " ") 
+      local split_text2 = {}
+      split_text2 = split(script_text2, " ")
+      local split_text3 = {}
+      split_text3 = split(script_text3, " ")
+      local split_text4 = {}
+      split_text4 = split(script_text4, " ")
 
-    if (len >= 5) then
-      context:pop_input(1)
-      local script_text1 = context:get_script_text()
-      split_text1 = {}                                  --命名编码数组
-      split_text1 = split(script_text1, " ")             --以空格分割编码，放入命名好的数组内
-
-      context:pop_input(1)
-      local script_text2 = context:get_script_text()
-      split_text2 = {}                                  --命名编码数组
-      split_text2 = split(script_text2, " ")             --以空格分割编码，放入命名好的数组内
-      
-      context:pop_input(1)
-      local script_text3 = context:get_script_text()
-      split_text3 = {}                                  --命名编码数组
-      split_text3 = split(script_text3, " ")             --以空格分割编码，放入命名好的数组内
-
-      context:pop_input(1)
-      local script_text4 = context:get_script_text()
-      split_text4 = {}                                  --命名编码数组
-      split_text4 = split(script_text4, " ")             --以空格分割编码，放入命名好的数组内
-
-      local position = 4
+      local position = 0
       local spilt_position = #split_text4
       for i=1, #split_text4-1 do
         if (#split_text[i] ~= #split_text1[i] or #split_text1[i] ~= #split_text2[i] or #split_text2[i] ~= #split_text3[i] or #split_text3[i] ~= #split_text4[i]) then
-
           spilt_position = i
           break
         else
           position = #split_text[i] + position
         end
       end
+
       context:pop_input(len-position)
+
       local commit_text = context:get_commit_text()
       engine:commit_text(commit_text)
       context:clear()
