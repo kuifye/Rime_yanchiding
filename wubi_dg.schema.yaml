@@ -1,0 +1,84 @@
+# Rime schema settings
+# encoding: utf-8
+
+schema:
+  schema_id: wubi_dg
+  name: "五笔86_延迟顶功"
+  version: "1.0"
+  author:
+    - Rime schema by 梨子
+  description:
+    五笔86_延迟顶功
+
+switches:
+  - name: ascii_mode
+    reset: 0
+    states: [ 中文, 西文 ]
+  - name: full_shape
+    states: [ 半角, 全角 ]
+  - name: simplification
+    reset: 1
+    states: [ 漢字, 汉字 ]
+  - name: ascii_punct
+    reset: 0
+    states: [ 。，, ．， ]
+    
+engine:
+  processors:
+    - lua_processor@auto_select_processor
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - punct_translator
+    - table_translator
+    - reverse_lookup_translator
+  filters:
+    - simplifier
+    - uniquifier
+    
+speller:
+  alphabet: "qwertasdfgzxcvbyuiophjklnm"
+  auto_select_phrase: true       #是否简码自动上屏
+  auto_select_simple_code: true  #前两码是否自动上屏
+  auto_code: 1                #N码自动上屏
+  delimiter: " `"
+  initials: "qwertasdfgzxcvbyuiophjklnm"
+
+translator:
+  dictionary: wubi_dg   #使用码表
+  enable_encoder: false   #造词
+  encode_commit_history: false   #上屏字造词
+  enable_completion: true   #逐码提示
+  enable_sentence: true   #整句模式
+  sentence_over_completion: false   #简码组句
+  enable_user_dict: true   #记录词频
+  stop_change: false #停止调频造词
+  initial_quality: 9   #出字优先级
+
+reverse_lookup:
+  dictionary: tbig
+  comment_format:
+    - xform/^/〔/
+    - xform/$/〕/
+    - xform/ / /
+
+key_binder:
+  import_preset: default
+
+recognizer:
+  import_preset: default
+  patterns:
+    reverse_lookup: "[a-z']*'+[a-z']*'"
+    pinyin_simp: "^`[a-z']*'?$"
