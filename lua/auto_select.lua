@@ -1,32 +1,3 @@
--- -- 使得script处理器也能无条件自动上屏
--- local function auto_select(key, env)
-
---   local engine = env.engine
---   local context = engine.context
---   local config = engine.schema.config
---   local len = string.len(env.engine.context.input)
---   local max_len = tonumber(config:get_string('speller/max_code_length'))
---   local length_limit = tonumber(config:get_string('speller/length_limit')) or 40
-  
---   if(length_limit~=nil) then
---     if(len > length_limit)  then
---       context:pop_input(1)
---     end
---   end
-
---   if (len >= max_len) then
---     local commit_text = context:get_commit_text()
---     engine:commit_text(commit_text)
---     context:clear()
---     return 1 -- kAccepted
---   end
-
---   return 2 -- kNoop
--- end
-
--- return auto_select
-
-
 -- 使得处理器能够处理上屏
 function split(str,delimiter)
   local dLen = string.len(delimiter)
@@ -144,33 +115,60 @@ local function auto_select(key, env)
     end
   end
 
-  if (auto_code ~= 0 and len >= auto_code and found_match_flag) then                                                        ------------------------------------n码上屏
-    local script_text = context:get_script_text()    --获取带分词的编码
-    local script_text1 = {}
-    script_text1 = context:get_property("script_text1")
-    local script_text2 = {}   
-    script_text2 = context:get_property("script_text2")
-    local script_text3 = {}   
-    script_text3 = context:get_property("script_text3")
-    local script_text4 = {}   
-    script_text4 = context:get_property("script_text4")
-    context:set_property("script_text1", script_text)
-    context:set_property("script_text2", script_text1)
-    context:set_property("script_text3", script_text2)
-    context:set_property("script_text4", script_text3)
-    if (len >= 4) then
-      local split_text = {}
-      split_text = split(script_text, " ")
-      local split_text1 = {}
-      split_text1 = split(script_text1, " ") 
-      local split_text2 = {}
-      split_text2 = split(script_text2, " ")
-      local split_text3 = {}
-      split_text3 = split(script_text3, " ")
-      local split_text4 = {}
-      split_text4 = split(script_text4, " ")
+  -- if (auto_code ~= 0 and len >= auto_code and found_match_flag) then                                                        ------------------------------------n码上屏
+  --   local script_text = context:get_script_text()    --获取带分词的编码
+  --   local script_text1 = {}
+  --   script_text1 = context:get_property("script_text1")
+  --   local script_text2 = {}   
+  --   script_text2 = context:get_property("script_text2")
+  --   local script_text3 = {}   
+  --   script_text3 = context:get_property("script_text3")
+  --   local script_text4 = {}   
+  --   script_text4 = context:get_property("script_text4")
+  --   context:set_property("script_text1", script_text)
+  --   context:set_property("script_text2", script_text1)
+  --   context:set_property("script_text3", script_text2)
+  --   context:set_property("script_text4", script_text3)
+  --   if (len >= 4) then
+  --     local split_text = {}
+  --     split_text = split(script_text, " ")
+  --     local split_text1 = {}
+  --     split_text1 = split(script_text1, " ") 
+  --     local split_text2 = {}
+  --     split_text2 = split(script_text2, " ")
+  --     local split_text3 = {}
+  --     split_text3 = split(script_text3, " ")
+  --     local split_text4 = {}
+  --     split_text4 = split(script_text4, " ")
+  -- local position = 0
 
-      local position = 0
+  local script_text = context:get_script_text()    --获取带分词的编码
+  split_text = {}                                  --命名编码数组
+  split_text = split(script_text, " ")             --以空格分割编码，放入命名好的数组内
+  if (auto_code ~= 0 and len >= auto_code ) then                                                  ------------------------------------顶功码上屏
+    if (len >= 5) then
+      context:pop_input(1)
+      local script_text1 = context:get_script_text()
+      split_text1 = {}                                  --命名编码数组
+      split_text1 = split(script_text1, " ")             --以空格分割编码，放入命名好的数组内
+
+      context:pop_input(1)
+      local script_text2 = context:get_script_text()
+      split_text2 = {}                                  --命名编码数组
+      split_text2 = split(script_text2, " ")             --以空格分割编码，放入命名好的数组内
+      
+      context:pop_input(1)
+      local script_text3 = context:get_script_text()
+      split_text3 = {}                                  --命名编码数组
+      split_text3 = split(script_text3, " ")             --以空格分割编码，放入命名好的数组内
+
+      context:pop_input(1)
+      local script_text4 = context:get_script_text()
+      split_text4 = {}                                  --命名编码数组
+      split_text4 = split(script_text4, " ")             --以空格分割编码，放入命名好的数组内
+      local position = 4
+
+      
       local spilt_position = #split_text4
       for i=1, #split_text4-1 do
         if (#split_text[i] ~= #split_text1[i] or #split_text1[i] ~= #split_text2[i] or #split_text2[i] ~= #split_text3[i] or #split_text3[i] ~= #split_text4[i]) then
